@@ -55,7 +55,7 @@ async function handleLogin() {
             localStorage.setItem('username', user);
             
             alert("Đăng nhập thành công!");
-            window.location.href = "index.html";
+            window.location.href = "dashboard.html";
         } else {
             alert("Sai tên đăng nhập hoặc mật khẩu!");
         }

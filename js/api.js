@@ -427,7 +427,7 @@ async function handleLogin() {
   
   if (result.success) {
     alert('Đăng nhập thành công!');
-    window.location.href = 'index.html';
+    window.location.href = 'dashboard.html';
   } else {
     alert(result.message);
   }
