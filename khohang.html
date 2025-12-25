@@ -3,79 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Quản lý Tiệm thuốc Mini</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Kho Hàng - Nhà Thuốc Mini</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* RESET & FONT */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { display: flex; height: 100vh; background-color: #f0f2f5; overflow: hidden; }
+
+        /* SIDEBAR (GIỐNG HÌNH) */
+        .sidebar {
+            width: 250px; flex-shrink: 0;
+            background: linear-gradient(180deg, #5efce8 0%, #736efe 100%); /* Màu Gradient xanh ngọc */
+            padding: 20px; display: flex; flex-direction: column; color: #003366;
+            border-right: 1px solid #ccc;
+        }
+        .logo { font-size: 22px; font-weight: 900; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
+        .logo i { color: #ff6b6b; font-size: 28px; }
+
+        .menu { list-style: none; }
+        .menu li { margin-bottom: 10px; }
+        .menu a {
+            display: flex; align-items: center; gap: 15px; padding: 12px 15px;
+            text-decoration: none; color: #003366; font-weight: 600; border-radius: 8px; transition: 0.3s;
+        }
+        .menu a:hover { background: rgba(255,255,255,0.4); }
+        .menu li.active a { background: #007bff; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        
+        .contact-box {
+            margin-top: auto; background: rgba(255,255,255,0.8); padding: 15px;
+            border-radius: 10px; font-size: 12px; line-height: 1.5;
+        }
+
+        /* MAIN CONTENT */
+        .main-content { flex: 1; padding: 20px; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* HEADER */
+        .header {
+            background: white; border-radius: 10px; padding: 10px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px;
+        }
+        .search-bar {
+            background: #f0f2f5; padding: 8px 15px; border-radius: 20px;
+            display: flex; align-items: center; gap: 10px; width: 400px;
+        }
+        .search-bar input { border: none; background: transparent; outline: none; width: 100%; }
+
+        /* TABLE CARD */
+        .table-card {
+            background: white; border-radius: 15px; padding: 20px; flex: 1;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; flex-direction: column;
+            border: 4px solid #e0e0e0; /* Viền dày giống hình */
+        }
+
+        .action-bar { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 15px; }
+        .btn { padding: 8px 15px; border: none; border-radius: 20px; color: white; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .btn-blue { background: #00b0ff; }
+        .btn-green { background: #4caf50; }
+
+        /* TABLE STYLE */
+        .table-wrapper { flex: 1; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #e0e0e0; padding: 12px; text-align: left; font-weight: bold; border: 1px solid #ccc; }
+        td { padding: 10px; border: 1px solid #ccc; vertical-align: middle; }
+        tr:nth-child(even) { background: #f9f9f9; }
+
+        .action-icons i { cursor: pointer; margin-right: 8px; font-size: 16px; }
+        .fa-eye { color: #00b0ff; }
+        .fa-pen-to-square { color: #4caf50; }
+        .fa-trash { color: #ff5252; }
+
+        /* MODAL (FORM NHẬP) */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-content {
+            background: white; padding: 25px; border-radius: 10px; width: 500px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .close-btn { float: right; cursor: pointer; font-size: 20px; }
+
+    </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="sidebar">
-            <div class="logo-section">
-                <h2><i class="fas fa-pills" style="color: #ff6b6b;"></i> NHÀ THUỐC MINI</h2>
-            </div>
+    <div class="sidebar">
+        <div class="logo"><i class="fas fa-capsules"></i> NHÀ THUỐC MINI</div>
+        <ul class="menu">
+            <li><a href="#"><i class="fas fa-home"></i> Trang chủ</a></li>
+            <li><a href="banhang.html"><i class="fas fa-shopping-cart"></i> Cửa hàng</a></li>
+            <li><a href="#"><i class="fas fa-chart-bar"></i> Thống kê</a></li>
+            <li class="active"><a href="khohang.html"><i class="fas fa-box"></i> Kho hàng</a></li>
+            <li><a href="#"><i class="fas fa-users"></i> Khách hàng</a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> Cài đặt</a></li>
+        </ul>
+        <div class="contact-box">
+            <b>Liên hệ hỗ trợ:</b><br>• Hotline: 0900******<br>• Admin: admin123@gmail.com
+        </div>
+    </div>
 
-            <ul class="menu">
-             <li><a href="dashboard.html"><i class="fas fa-home"></i> Trang chủ</a></li>
-                <li><a href="banhang.html"><i class="fas fa-shopping-cart"></i> Cửa hàng</a></li>
-                <li><a href="dashboard.html"><i class="fas fa-chart-bar"></i> Thống kê</a></li>
-                <li><a href="khohang.html"><i class="fas fa-box"></i> Kho hàng</a></li>
-                <li class="active"><a href="khachhang.html"><i class="fas fa-users"></i> Khách hàng</a></li>
-                <li><a href="cai_dat.html"><i class="fas fa-cog"></i> Cài đặt</a></li>
-            </ul>
-
-            <div class="contact-info">
-                <p><strong>Liên hệ hỗ trợ:</strong></p>
-                <p>• Admin</p>
-                <p>• Hotline: 0900******</p>
-                <p>• Zalo: 0909******</p>
-                <p style="font-size: 10px; margin-top: 5px;">(Thời gian hỗ trợ 08:00 - 17:00)</p>
+    <div class="main-content">
+        <div class="header">
+            <h2 style="font-size: 24px;">Kho hàng</h2>
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Tìm kiếm...">
             </div>
+            <div style="font-weight: bold;"><i class="fas fa-user-circle"></i> User: Admin</div>
         </div>
 
-        <div class="main-content">
-            <header>
-                <div class="page-title">
-                    <h2>Trang chủ</h2>
-                </div>
-                
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Tìm kiếm...">
-                </div>
-
-                <div class="user-info">
-                    <i class="fas fa-bell notification"></i>
-                    <div class="user-profile">
-                        <i class="fas fa-user-circle"></i>
-                        <span>User: Admin</span>
-                        <i class="fas fa-bars"></i>
-                    </div>
-                </div>
-            </header>
-
-            <div class="content-body">
-                <div class="stats-grid">
-                    <div class="card">
-                        <h3>Doanh thu hôm nay</h3>
-                        <p class="number">$10.000Đ</p>
-                        </div>
-                    <div class="card">
-                        <h3>Đơn hàng mới</h3>
-                        <p class="number">12</p>
-                    </div>
-                    <div class="card">
-                        <h3>Khách hàng thân thiết</h3>
-                        <p class="number">113</p>
-                    </div>
-                    <div class="card">
-                        <h3>Sản phẩm bán chạy</h3>
-                        <p>Strepsils...</p>
-                    </div>
-                </div>
+        <div class="table-card">
+            <div class="action-bar">
+                <button class="btn btn-blue" onclick="moForm()"><i class="fas fa-plus"></i> Thêm thuốc mới</button>
+                <button class="btn btn-green"><i class="fas fa-file-excel"></i> Xuất Excel</button>
+            </div>
+            
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mã</th>
+                            <th>Tên thuốc</th>
+                            <th>Phân loại</th>
+                            <th>Đơn vị</th>
+                            <th>Giá</th>
+                            <th>Tồn kho</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        </tbody>
+                </table>
+            </div>
+            
+            <div style="text-align: center; margin-top: 10px;">
+                <i class="fas fa-chevron-left"></i> 
+                <span style="background:#007bff; color:white; padding: 2px 8px; border-radius: 50%;">1</span> 
+                <span style="background:#ddd; padding: 2px 8px; border-radius: 50%;">2</span> 
+                <i class="fas fa-chevron-right"></i>
             </div>
         </div>
     </div>
 
+    <div class="modal" id="modalNhap">
+        <div class="modal-content">
+            <span class="close-btn" onclick="dongForm()">&times;</span>
+            <h2 style="text-align: center; color: #007bff; margin-bottom: 20px;">NHẬP THUỐC MỚI</h2>
+            <div class="form-group"><input type="text" id="name" placeholder="Tên thuốc (VD: Panadol)"></div>
+            <div class="form-group"><input type="text" id="category" placeholder="Phân loại (VD: Thuốc)"></div>
+            <div class="form-group"><input type="text" id="unit" placeholder="Đơn vị (Hộp/Vỉ)"></div>
+            <div class="form-group"><input type="number" id="price" placeholder="Giá bán"></div>
+            <div class="form-group"><input type="number" id="stock" placeholder="Số lượng tồn"></div>
+            <div class="form-group"><input type="text" id="image" placeholder="Link ảnh"></div>
+            <button class="btn btn-blue" style="width: 100%; justify-content: center;" onclick="themThuoc()">LƯU LẠI</button>
+        </div>
+    </div>
+
+<script>
+    const API = 'http://localhost:3000/api/medicines';
+
+    window.onload = loadDanhSach;
+
+    function moForm() { document.getElementById('modalNhap').style.display = 'flex'; }
+    function dongForm() { document.getElementById('modalNhap').style.display = 'none'; }
+
+    async function loadDanhSach() {
+        try {
+            const res = await fetch(API);
+            const data = await res.json();
+            const list = data.data ? data.data : data;
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            list.forEach((t, index) => {
+                // Tạo mã giả lập 000001
+                let ma = "00000" + (index + 1);
+                ma = ma.slice(-6);
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${ma}</td>
+                        <td>${t.MedName}</td>
+                        <td>${t.Category || 'Thuốc'}</td>
+                        <td>${t.Unit || 'Hộp'}</td>
+                        <td>${Number(t.Price).toLocaleString()}</td>
+                        <td>${t.StockQuantity}</td>
+                        <td class="action-icons">
+                            <i class="fas fa-eye"></i>
+                            <i class="fas fa-pen-to-square"></i>
+                            <i class="fas fa-trash" onclick="xoa(${t.MedID})"></i>
+                        </td>
+                    </tr>
+                `;
+            });
+        } catch(e) { console.log(e); }
+    }
+
+    async function themThuoc() {
+        const payload = {
+            medName: document.getElementById('name').value,
+            category: document.getElementById('category').value,
+            unit: document.getElementById('unit').value,
+            price: document.getElementById('price').value,
+            stockQuantity: document.getElementById('stock').value,
+            imageURL: document.getElementById('image').value
+        };
+
+        await fetch(API, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        alert("Đã nhập thành công!");
+        dongForm();
+        loadDanhSach();
+    }
+
+    async function xoa(id) {
+        if(confirm("Xóa nhé?")) {
+            await fetch(API + '/' + id, { method: 'DELETE' });
+            loadDanhSach();
+        }
+    }
+</script>
 </body>
 </html>

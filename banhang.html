@@ -3,79 +3,294 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Quản lý Tiệm thuốc Mini</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Cửa Hàng - Bán Thuốc</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { display: flex; height: 100vh; background-color: #eef1f5; overflow: hidden; }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 240px; flex-shrink: 0;
+            background: linear-gradient(180deg, #5efce8 0%, #736efe 100%);
+            padding: 15px; display: flex; flex-direction: column; color: #003366;
+        }
+        .logo { font-size: 20px; font-weight: 900; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .logo i { color: #ff6b6b; font-size: 24px; }
+        .menu { list-style: none; }
+        .menu li { margin-bottom: 8px; }
+        .menu a {
+            display: flex; align-items: center; gap: 10px; padding: 10px;
+            text-decoration: none; color: #003366; font-weight: 600; border-radius: 8px;
+        }
+        .menu li.active a { background: #007bff; color: white; }
+        .contact-box { margin-top: auto; background: rgba(255,255,255,0.8); padding: 10px; border-radius: 10px; font-size: 11px; }
+
+        /* MAIN CONTENT GRID */
+        .main-wrapper {
+            flex: 1; display: grid; grid-template-columns: 3fr 1.2fr; gap: 15px; padding: 15px;
+        }
+
+        /* LEFT COLUMN: PRODUCTS */
+        .left-col { display: flex; flex-direction: column; gap: 15px; overflow-y: auto; padding-right: 5px; }
+        
+        /* Header Search */
+        .top-search {
+            background: white; padding: 10px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .search-input { background: #f0f2f5; padding: 8px 15px; border-radius: 15px; width: 60%; display: flex; align-items: center; }
+        .search-input input { border: none; background: transparent; outline: none; width: 100%; margin-left: 10px; }
+
+        /* Section Title */
+        .sec-title { font-weight: bold; margin-bottom: 10px; font-size: 16px; display: flex; align-items: center; gap: 5px; }
+
+        /* Hot Products (Scroll ngang) */
+        .hot-products {
+            display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;
+        }
+        .hot-card {
+            background: white; border-radius: 10px; padding: 10px; min-width: 160px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); border: 1px solid #ddd; position: relative;
+        }
+        .fire-icon { position: absolute; top: 5px; right: 5px; color: orangered; }
+        .hot-card img { width: 100%; height: 80px; object-fit: contain; }
+        .hot-card h4 { font-size: 13px; margin: 5px 0; height: 32px; overflow: hidden; }
+
+        /* Filter Buttons */
+        .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+        .btn-filter {
+            padding: 5px 15px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; color: white;
+        }
+        .btn-blue { background: #007bff; } .btn-cyan { background: #00bcd4; } .btn-teal { background: #009688; }
+
+        /* Product Grid */
+        .product-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px;
+        }
+        .prod-card {
+            background: white; border-radius: 10px; padding: 10px; border: 1px solid #ccc; position: relative;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .prod-card img { width: 100%; height: 90px; object-fit: contain; }
+        .prod-name { font-size: 13px; font-weight: bold; margin: 5px 0; height: 35px; overflow: hidden; }
+        .prod-price { font-size: 12px; margin-bottom: 5px; }
+        .prod-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
+        .badge-green { background: #28a745; color: white; padding: 2px 5px; border-radius: 4px; font-size: 10px; }
+        .badge-red { background: #dc3545; color: white; padding: 2px 5px; border-radius: 4px; font-size: 10px; }
+        .btn-cart { background: #00bcd4; border: none; padding: 5px; border-radius: 5px; cursor: pointer; }
+
+        /* RIGHT COLUMN: CART */
+        .right-col {
+            background: white; border-radius: 15px; padding: 15px; display: flex; flex-direction: column;
+            border: 1px solid #ccc; height: 100%;
+        }
+        .cart-header { font-size: 18px; font-weight: bold; margin-bottom: 15px; }
+        .customer-input { width: 100%; padding: 8px; border-radius: 20px; border: 1px solid #ccc; margin-bottom: 15px; }
+        
+        .cart-list { flex: 1; overflow-y: auto; padding-right: 5px; }
+        .cart-item {
+            background: #f8f9fa; border: 1px solid #ddd; border-radius: 10px; padding: 8px; margin-bottom: 8px;
+            position: relative;
+        }
+        .cart-item h5 { font-size: 12px; margin-bottom: 2px; }
+        .cart-item-row { display: flex; justify-content: space-between; font-size: 11px; color: #555; }
+        .btn-remove-item { position: absolute; top: 5px; right: 5px; color: #999; cursor: pointer; }
+
+        .checkout-area { border-top: 2px solid #eee; padding-top: 10px; margin-top: 10px; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 14px; }
+        .total-price { font-size: 18px; font-weight: bold; color: #28a745; }
+        .btn-checkout {
+            width: 100%; background: #28a745; color: white; border: none; padding: 12px;
+            border-radius: 20px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px;
+        }
+        .btn-checkout:hover { background: #218838; }
+
+    </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="sidebar">
-            <div class="logo-section">
-                <h2><i class="fas fa-pills" style="color: #ff6b6b;"></i> NHÀ THUỐC MINI</h2>
+    <div class="sidebar">
+        <div class="logo"><i class="fas fa-capsules"></i> NHÀ THUỐC MINI</div>
+        <ul class="menu">
+            <li><a href="#"><i class="fas fa-home"></i> Trang chủ</a></li>
+            <li class="active"><a href="banhang.html"><i class="fas fa-shopping-cart"></i> Cửa hàng</a></li>
+            <li><a href="#"><i class="fas fa-chart-bar"></i> Thống kê</a></li>
+            <li><a href="khohang.html"><i class="fas fa-box"></i> Kho hàng</a></li>
+            <li><a href="#"><i class="fas fa-users"></i> Khách hàng</a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> Cài đặt</a></li>
+        </ul>
+        <div class="contact-box">
+            <b>Liên hệ:</b><br>Hotline: 0909******<br>ĐC: Quận 9, TP.HCM
+        </div>
+    </div>
+
+    <div class="main-wrapper">
+        
+        <div class="left-col">
+            <div class="top-search">
+                <h2 style="margin: 0;">Cửa hàng</h2>
+                <div class="search-input">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Tìm kiếm thuốc...">
+                </div>
+                <div><i class="fas fa-bell"></i> <i class="fas fa-user"></i> Admin</div>
             </div>
 
-            <ul class="menu">
-                  <li><a href="dashboard.html"><i class="fas fa-home"></i> Trang chủ</a></li>
-                <li><a href="banhang.html"><i class="fas fa-shopping-cart"></i> Cửa hàng</a></li>
-                <li><a href="dashboard.html"><i class="fas fa-chart-bar"></i> Thống kê</a></li>
-                <li><a href="khohang.html"><i class="fas fa-box"></i> Kho hàng</a></li>
-                <li class="active"><a href="khachhang.html"><i class="fas fa-users"></i> Khách hàng</a></li>
-                <li><a href="cai_dat.html"><i class="fas fa-cog"></i> Cài đặt</a></li>
-            </ul>
+            <div>
+                <div class="sec-title">Sản phẩm HOT <i class="fas fa-fire" style="color:orange"></i></div>
+                <div class="hot-products" id="hotList">
+                    </div>
+            </div>
 
-            <div class="contact-info">
-                <p><strong>Liên hệ hỗ trợ:</strong></p>
-                <p>• Admin</p>
-                <p>• Hotline: 0900******</p>
-                <p>• Zalo: 0909******</p>
-                <p style="font-size: 10px; margin-top: 5px;">(Thời gian hỗ trợ 08:00 - 17:00)</p>
+            <div class="filters">
+                <button class="btn-filter btn-blue">Tất cả</button>
+                <button class="btn-filter btn-cyan">TPCN</button>
+                <button class="btn-filter btn-teal">Thiết bị y tế</button>
+                <button class="btn-filter btn-blue">Dụng cụ</button>
+                <button class="btn-filter btn-cyan">Mẹ và bé</button>
+            </div>
+
+            <div>
+                <div class="sec-title">Tất cả sản phẩm <span style="margin-left:auto; background:#00bcd4; color:white; padding:2px 8px; border-radius:10px; font-size:12px; cursor:pointer;">Thêm sản phẩm mới</span></div>
+                <div class="product-grid" id="gridList">
+                    </div>
             </div>
         </div>
 
-        <div class="main-content">
-            <header>
-                <div class="page-title">
-                    <h2>Trang chủ</h2>
-                </div>
-                
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Tìm kiếm...">
-                </div>
+        <div class="right-col">
+            <div class="cart-header">Giỏ hàng</div>
+            <input type="text" class="customer-input" placeholder="Khách hàng: Nhập SĐT">
+            <div style="font-weight:bold; margin-bottom:10px;">Sản phẩm của bạn:</div>
+            
+            <div class="cart-list" id="cartList">
+                <p style="text-align:center; color:gray; margin-top:20px;">Chưa có sản phẩm nào</p>
+            </div>
 
-                <div class="user-info">
-                    <i class="fas fa-bell notification"></i>
-                    <div class="user-profile">
-                        <i class="fas fa-user-circle"></i>
-                        <span>User: Admin</span>
-                        <i class="fas fa-bars"></i>
-                    </div>
-                </div>
-            </header>
-
-            <div class="content-body">
-                <div class="stats-grid">
-                    <div class="card">
-                        <h3>Doanh thu hôm nay</h3>
-                        <p class="number">$10.000Đ</p>
-                        </div>
-                    <div class="card">
-                        <h3>Đơn hàng mới</h3>
-                        <p class="number">12</p>
-                    </div>
-                    <div class="card">
-                        <h3>Khách hàng thân thiết</h3>
-                        <p class="number">113</p>
-                    </div>
-                    <div class="card">
-                        <h3>Sản phẩm bán chạy</h3>
-                        <p>Strepsils...</p>
-                    </div>
-                </div>
+            <div class="checkout-area">
+                <div class="summary-row"><span>Tạm tính:</span> <span id="subTotal">0</span></div>
+                <div class="summary-row"><span>VAT (10%):</span> <span id="vat">0</span></div>
+                <div class="summary-row" style="margin-top:5px;"><span>Tổng tiền:</span> <span class="total-price" id="finalTotal">0</span></div>
+                <button class="btn-checkout" onclick="thanhToan()">Thanh toán</button>
             </div>
         </div>
     </div>
 
+<script>
+    let gioHang = [];
+    const API = 'http://localhost:3000/api/medicines';
+
+    window.onload = async function() {
+        try {
+            const res = await fetch(API);
+            const data = await res.json();
+            const list = data.data ? data.data : data;
+
+            renderHot(list);
+            renderGrid(list);
+        } catch(e) { console.log(e); }
+    };
+
+    function renderHot(list) {
+        // Lấy đại 5 cái đầu làm Hot
+        const hotDiv = document.getElementById('hotList');
+        hotDiv.innerHTML = '';
+        list.slice(0, 5).forEach(t => {
+            hotDiv.innerHTML += `
+                <div class="hot-card">
+                    <i class="fas fa-fire fire-icon"></i>
+                    <img src="${t.ImageURL || 'https://via.placeholder.com/150'}">
+                    <h4>${t.MedName}</h4>
+                </div>
+            `;
+        });
+    }
+
+    function renderGrid(list) {
+        const gridDiv = document.getElementById('gridList');
+        gridDiv.innerHTML = '';
+        list.forEach(t => {
+            if (t.StockQuantity > 0) {
+                gridDiv.innerHTML += `
+                    <div class="prod-card">
+                        <img src="${t.ImageURL || 'https://via.placeholder.com/150'}">
+                        <div class="prod-name">${t.MedName}</div>
+                        <div class="prod-price">Giá: ${Number(t.Price).toLocaleString()}</div>
+                        <div class="prod-actions">
+                            <span class="badge-green">Xem</span>
+                            <span class="badge-red" style="margin-left:2px;">Sửa</span>
+                            <button class="btn-cart" onclick="mua(${t.MedID}, '${t.MedName}', ${t.Price})">
+                                <i class="fas fa-shopping-cart" style="color:white"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    }
+
+    function mua(id, ten, gia) {
+        const item = gioHang.find(i => i.id === id);
+        if(item) item.sl++;
+        else gioHang.push({id, ten, gia, sl: 1});
+        renderCart();
+    }
+
+    function xoaKhoiGio(index) {
+        gioHang.splice(index, 1);
+        renderCart();
+    }
+
+    function renderCart() {
+        const div = document.getElementById('cartList');
+        if(gioHang.length === 0) {
+            div.innerHTML = '<p style="text-align:center; color:gray;">Trống</p>';
+            updateTotal(0);
+            return;
+        }
+        div.innerHTML = '';
+        let tong = 0;
+        gioHang.forEach((item, index) => {
+            tong += item.gia * item.sl;
+            div.innerHTML += `
+                <div class="cart-item">
+                    <i class="fas fa-times btn-remove-item" onclick="xoaKhoiGio(${index})"></i>
+                    <h5>${item.ten}</h5>
+                    <div class="cart-item-row">
+                        <span>SL: ${item.sl}</span>
+                        <span>Giá: ${item.gia.toLocaleString()}</span>
+                    </div>
+                </div>
+            `;
+        });
+        updateTotal(tong);
+    }
+
+    function updateTotal(tong) {
+        const vat = tong * 0.1;
+        const final = tong + vat;
+        document.getElementById('subTotal').innerText = tong.toLocaleString();
+        document.getElementById('vat').innerText = vat.toLocaleString();
+        document.getElementById('finalTotal').innerText = final.toLocaleString();
+    }
+
+    async function thanhToan() {
+        if(gioHang.length === 0) return alert("Chưa mua gì!");
+        
+        const payload = {
+            CustomerID: 1, 
+            Details: gioHang.map(i => ({ MedID: i.id, Quantity: i.sl }))
+        };
+
+        await fetch('http://localhost:3000/api/orders', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        alert("Thanh toán thành công!");
+        gioHang = [];
+        renderCart();
+        window.location.reload();
+    }
+</script>
 </body>
 </html>
